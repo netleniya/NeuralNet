@@ -6,8 +6,8 @@ targets = [230, 555, 815, 860, 1140, 1085, 1200, 1330, 1290,
 # fmt: on
 w = 0.1
 b = 0.3
-epochs = 200
-learning_rate = 0.01
+epochs = 250
+learning_rate = 0.05
 
 
 def predict(input: int | float) -> int | float:
@@ -16,9 +16,9 @@ def predict(input: int | float) -> int | float:
 
 if __name__ == "__main__":
     # train the network
-    for epoch in range(epochs):
+    for _ in range(epochs):
         pred = [predict(i) for i in inputs]
-        cost = sum([(p - t) ** 2 for p, t in zip(pred, targets)]) / len(targets)
+        cost = sum((p - t) ** 2 for p, t in zip(pred, targets)) / len(targets)
         print(f"w:{w:.2f}, b:{b:.2f}, c: {cost:.2f}")
 
         # back-propagation
@@ -27,3 +27,6 @@ if __name__ == "__main__":
         bias_delta = [e * 1 for e in errors_deriv]
         w -= learning_rate * sum(weight_delta) / len(weight_delta)
         b -= learning_rate * sum(bias_delta) / len(bias_delta)
+
+    # test the network (how much does a 4 year old car cost?)
+    print(f"A 4 year old car would cost ${predict(4.0):.2f} in maintenance")
