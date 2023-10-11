@@ -1,7 +1,7 @@
 w = 0.1
 b = 0.3
 learning_rate = 0.1
-epochs = 80
+epochs = 100
 
 inputs = [1, 2, 3, 4]
 targets = [12, 14, 16, 18]
