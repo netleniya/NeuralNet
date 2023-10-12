@@ -8,8 +8,8 @@ targets = [230, 555, 815, 860, 1140, 1085, 1200, 1330, 1290,
 w1 = 0.1
 w2 = 0.2
 b = 0.3
-epochs = 4
-learning_rate = 0.05
+epochs = 4000  # massively increase the epochs
+learning_rate = 1e-12  # bump the learning rate to essentially zero
 
 
 def predict(i1: int | float, i2: int | float) -> int | float:
@@ -32,5 +32,8 @@ if __name__ == "__main__":
         w2 -= learning_rate * sum(weight2_delta) / len(weight2_delta)
         b -= learning_rate * sum(bias_delta) / len(bias_delta)
 
-    # test the network (how much does a 4 year old car cost?)
-    # print(f"A 4 year old car would cost ${predict(4.0):.2f} in maintenance")
+    print(f"w1:{w1:.4f}, w2:{w2:.4f}, b:{b:.4f}")
+    # test the network (we expect a 1 year old car with 20000 miles to cost $750)
+    print(f"Predicted cost: ${predict(1.0, 20000):.2f}")
+
+# NB The network is mostly learning from the mileage and ignoring the weight due to differences in magnitude. Will rectify this later
