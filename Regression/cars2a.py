@@ -10,31 +10,32 @@ inputs = [
 targets = [
     230, 555, 815, 860, 1140, 1085, 1200, 1330, 1290, 870, 1545, 1480, 1750, 1845, 1790, 1955]
 # fmt: on
-w1 = 0.1
-w2 = 0.2
+weights = [0.1, 0.2]
 b = 0.3
 epochs = 4000  # massively increase the epochs
 learning_rate = 0.1
 
 
-def predict(i1: int | float, i2: int | float) -> int | float:
-    return w1 * i1 + w2 * i2 + b
+def predict(inputs: list) -> int | float:
+    return sum(w * i for w, i in zip(weights, inputs)) + b
 
 
 if __name__ == "__main__":
     # train the network
     for epoch in range(epochs):
-        pred = [predict(i1, i2) for i1, i2 in inputs]
+        pred = [predict(input) for input in inputs]
         cost = sum((p - t) ** 2 for p, t in zip(pred, targets)) / len(targets)
         print(f",epoch: {epoch} c: {cost:.2f}")
 
         # back-propagation
         errors_deriv = [2 * (p - t) for p, t in zip(pred, targets)]
-        weight1_delta = [e * i[0] for e, i in zip(errors_deriv, inputs)]
-        weight2_delta = [e * i[1] for e, i in zip(errors_deriv, inputs)]
+        weights_d = [
+            [err * i for i in input] for err, input in zip(errors_deriv, inputs)
+        ]
         bias_delta = [e * 1 for e in errors_deriv]
-        w1 -= learning_rate * sum(weight1_delta) / len(weight1_delta)
-        w2 -= learning_rate * sum(weight2_delta) / len(weight2_delta)
+        weights_d_T = list(zip(*weights_d))  # transpose weights_d
+        for i in range(len(weights)):
+            weights[i] -= learning_rate * sum(weights_d_T[i]) / len(weights_d)
         b -= learning_rate * sum(bias_delta) / len(bias_delta)
 
     # test the network with normalized test data
@@ -47,6 +48,6 @@ if __name__ == "__main__":
     ]
     test_targets = [500, 850, 1650, 950, 1375]
 
-    pred = [predict(i1, i2) for i1, i2 in test_inputs]
+    pred = [predict(input) for input in test_inputs]
     for p, t in zip(pred, test_targets):
         print(f"target: ${t}, predicted: ${p:.0f}")
