@@ -22,7 +22,7 @@ def predict(inputs: list) -> int | float:
 
 
 def activate(x: float) -> float:
-    return 1 / (1 + math.exp(-1))
+    return 1 / (1 + math.exp(-x))
 
 
 def log_loss(act: float, target: int) -> float:
