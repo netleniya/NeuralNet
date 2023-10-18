@@ -13,8 +13,8 @@ targets = [0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1] # 0 = keep, 1 = sell
 # fmt: on
 weights = [0.1, 0.2]
 b = 0.3
-epochs = 4000  # massively increase the epochs
-learning_rate = 0.1
+epochs = 400
+learning_rate = 0.5
 
 
 def predict(inputs: list) -> int | float:
