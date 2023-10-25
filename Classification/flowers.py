@@ -31,4 +31,20 @@ for epoch in range(epochs):
     # activation fn
     act = [softmax(p) for p in pred]
     cost = sum(log_loss(ac, ta) for ac, ta in zip(act, data.targets)) / len(act)
+
+    # error and weight derivatives
+    errors_d = [[(a - t) for a, t in zip(ac, ta)] for ac, ta in zip(act, data.targets)]
+    inputs_T = list(zip(*data.inputs))  # transpose training inputs
+    errors_d_T = list(zip(*errors_d))  # transpose error derivatives
+    weights_d = [
+        [sum(e * i for e, i in zip(er, inp)) for er in errors_d_T] for inp in inputs_T
+    ]
+    biases_d = [sum(errors) for errors in errors_d_T]
+
+    weights_d_T = list(zip(*weights_d))  # transpose weight_deltas
+    for y in range(len(weights_d_T)):
+        for x in range(len(weights_d_T[0])):
+            weights[y][x] -= learning_rate * weights_d_T[y][x] / len(data.inputs)
+        biases[y] -= learning_rate * biases_d[y] / len(data.inputs)
+
     print(f"epoch: {epoch}, cost: {cost:.4f}")
