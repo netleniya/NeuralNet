@@ -3,7 +3,7 @@ import math
 
 weights = [[0.1, 0.2], [0.15, 0.25], [0.18, 0.1]]
 biases = [0.3, 0.4, 0.35]
-epochs = 1
+epochs = 100
 learning_rate = 0.1
 
 
@@ -52,13 +52,11 @@ for epoch in range(epochs):
 
 # test the network
 pred = [
-    [sum([w * i for w, i in zip(we, inp)]) + bi for we, bi in zip(weights, biases)]
+    [sum(w * i for w, i in zip(we, inp)) + bi for we, bi in zip(weights, biases)]
     for inp in data.test_inputs
 ]
 act = [softmax(p) for p in pred]
-correct = 0  # keep a counter with correct predictions
-for a, t in zip(act, data.test_targets):
-    if a.index(max(a)) == t.index(max(t)):
-        correct += 1
-
+correct = sum(
+    a.index(max(a)) == t.index(max(t)) for a, t in zip(act, data.test_targets)
+)
 print(f"Correct: {correct}/{len(act)} ({correct/len(act):.2%})")
