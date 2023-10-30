@@ -1,5 +1,6 @@
 import nonlineardata as data
 import math
+import random
 
 
 def softmax(predictions: float) -> list[float]:
@@ -19,12 +20,17 @@ def log_loss(activations, targets):
 
 epochs = 1500
 learning_rate = 0.4
+input_layers, hidden_layers, output_layers = 2, 8, 3
 
-w_i_h = [[0.1, 0.2], [-0.3, 0.25], [0.12, 0.23], [-0.11, -0.22]]
-w_h_o = [[0.2, 0.17, 0.3, -0.11], [0.3, -0.4, 0.5, -0.22], [0.12, 0.23, 0.15, 0.33]]
+w_i_h = [
+    [random.random() - 0.5 for _ in range(input_layers)] for _ in range(hidden_layers)
+]
+w_h_o = [
+    [random.random() - 0.5 for _ in range(hidden_layers)] for _ in range(output_layers)
+]
 
-b_i_h = [0.2, 0.34, 0.21, 0.44]
-b_h_o = [0.3, 0.29, 0.37]
+b_i_h = [0 for _ in range(hidden_layers)]
+b_h_o = [0 for _ in range(output_layers)]
 
 
 # training loop
@@ -86,14 +92,14 @@ for epoch in range(epochs):
 
     # Update weights and biases for all layers
     w_h_o_d_T = list(zip(*w_h_o_d))
-    for y in range(len(w_h_o_d_T)):
-        for x in range(len(w_h_o_d_T[0])):
+    for y in range(output_layers):
+        for x in range(hidden_layers):
             w_h_o[y][x] -= learning_rate * w_h_o_d_T[y][x] / len(data.inputs)
             b_h_o[y] -= learning_rate * b_h_o_d[y] / len(data.inputs)
 
     w_i_h_d_T = list(zip(*w_i_h_d))
-    for y in range(len(w_i_h_d_T)):
-        for x in range(len(w_i_h_d_T[0])):
+    for y in range(hidden_layers):
+        for x in range(input_layers):
             w_i_h[y][x] -= learning_rate * w_i_h_d_T[y][x] / len(data.inputs)
             b_i_h[y] -= learning_rate * b_i_h_d[y] / len(data.inputs)
 
