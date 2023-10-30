@@ -17,8 +17,8 @@ def log_loss(activations, targets):
     return sum(losses)
 
 
-epochs = 1
-learning_rate = 0.1
+epochs = 1500
+learning_rate = 0.4
 
 w_i_h = [[0.1, 0.2], [-0.3, 0.25], [0.12, 0.23], [-0.11, -0.22]]
 w_h_o = [[0.2, 0.17, 0.3, -0.11], [0.3, -0.4, 0.5, -0.22], [0.12, 0.23, 0.15, 0.33]]
@@ -32,7 +32,7 @@ for epoch in range(epochs):
     # predictions of the hidden layer
     pred_h = [
         [
-            sum([w * a for w, a in zip(weights, inp)]) + bias
+            sum(w * a for w, a in zip(weights, inp)) + bias
             for weights, bias in zip(w_i_h, b_i_h)
         ]
         for inp in data.inputs
@@ -42,7 +42,7 @@ for epoch in range(epochs):
     # predictions of the output layer
     pred_o = [
         [
-            sum([w * a for w, a in zip(weights, inp)]) + bias
+            sum(w * a for w, a in zip(weights, inp)) + bias
             for weights, bias in zip(w_h_o, b_h_o)
         ]
         for inp in act_h
@@ -50,7 +50,7 @@ for epoch in range(epochs):
     # activation of the output layer (Softmax)
     act_o = [softmax(predictions) for predictions in pred_o]
 
-    cost = sum([log_loss(a, t) for a, t in zip(act_o, data.targets)]) / len(act_o)
+    cost = sum(log_loss(a, t) for a, t in zip(act_o, data.targets)) / len(act_o)
     print(f"epoch: {epoch} cost: {cost:.4f}")
 
     # Error derivatives
@@ -60,7 +60,7 @@ for epoch in range(epochs):
     w_h_o_T = list(zip(*w_h_o))
     errors_d_h = [
         [
-            sum([d * w for d, w in zip(deltas, weights)]) * (0 if p <= 0 else 1)
+            sum(d * w for d, w in zip(deltas, weights)) * (0 if p <= 0 else 1)
             for weights, p in zip(w_h_o_T, pred)
         ]
         for deltas, pred in zip(errors_d_o, pred_h)
@@ -70,10 +70,10 @@ for epoch in range(epochs):
     act_h_T = list(zip(*act_h))
     errors_d_o_T = list(zip(*errors_d_o))
     w_h_o_d = [
-        [sum([d * a for d, a in zip(deltas, act)]) for deltas in errors_d_o_T]
+        [sum(d * a for d, a in zip(deltas, act)) for deltas in errors_d_o_T]
         for act in act_h_T
     ]
-    b_h_o_d = [sum([d for d in deltas]) for deltas in errors_d_o_T]
+    b_h_o_d = [sum(list(deltas)) for deltas in errors_d_o_T]
 
     # Gradient input -> hidden
     inputs_T = list(zip(*data.inputs))
@@ -82,7 +82,7 @@ for epoch in range(epochs):
         [sum(d * a for d, a in zip(deltas, act)) for deltas in errors_d_h_T]
         for act in inputs_T
     ]
-    b_i_h_d = [sum([d for d in deltas]) for deltas in errors_d_h_T]
+    b_i_h_d = [sum(list(deltas)) for deltas in errors_d_h_T]
 
     # Update weights and biases for all layers
     w_h_o_d_T = list(zip(*w_h_o_d))
@@ -100,7 +100,7 @@ for epoch in range(epochs):
 # test the network
 pred_h = [
     [
-        sum([w * a for w, a in zip(weights, inp)]) + bias
+        sum(w * a for w, a in zip(weights, inp)) + bias
         for weights, bias in zip(w_i_h, b_i_h)
     ]
     for inp in data.test_inputs
@@ -109,15 +109,14 @@ act_h = [[max(0, p) for p in pre] for pre in pred_h]
 
 pred_o = [
     [
-        sum([w * a for w, a in zip(weights, inp)]) + bias
+        sum(w * a for w, a in zip(weights, inp)) + bias
         for weights, bias in zip(w_h_o, b_h_o)
     ]
     for inp in act_h
 ]
 act_o = [softmax(predictions) for predictions in pred_o]
 
-correct = 0
-for a, t in zip(act_o, data.test_targets):
-    if a.index(max(a)) == t.index(max(t)):
-        correct += 1
+correct = sum(
+    a.index(max(a)) == t.index(max(t)) for a, t in zip(act_o, data.test_targets)
+)
 print(f"Correct: {correct}/{len(act_o)} ({correct/len(act_o):.2%})")
