@@ -96,3 +96,28 @@ for epoch in range(epochs):
         for x in range(len(w_i_h_d_T[0])):
             w_i_h[y][x] -= learning_rate * w_i_h_d_T[y][x] / len(data.inputs)
             b_i_h[y] -= learning_rate * b_i_h_d[y] / len(data.inputs)
+
+# test the network
+pred_h = [
+    [
+        sum([w * a for w, a in zip(weights, inp)]) + bias
+        for weights, bias in zip(w_i_h, b_i_h)
+    ]
+    for inp in data.test_inputs
+]
+act_h = [[max(0, p) for p in pre] for pre in pred_h]
+
+pred_o = [
+    [
+        sum([w * a for w, a in zip(weights, inp)]) + bias
+        for weights, bias in zip(w_h_o, b_h_o)
+    ]
+    for inp in act_h
+]
+act_o = [softmax(predictions) for predictions in pred_o]
+
+correct = 0
+for a, t in zip(act_o, data.test_targets):
+    if a.index(max(a)) == t.index(max(t)):
+        correct += 1
+print(f"Correct: {correct}/{len(act_o)} ({correct/len(act_o):.2%})")
