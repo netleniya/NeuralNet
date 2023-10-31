@@ -18,7 +18,7 @@ def log_loss(activations, targets):
     return sum(losses)
 
 
-epochs = 1500
+epochs = 2500
 learning_rate = 0.4
 input_layers, hidden_layers, output_layers = 2, 8, 3
 
