@@ -5,3 +5,5 @@ Classification/__pycache__/flowersdata.cpython-311.pyc
 Classification/.ipynb_checkpoints/flowers-checkpoint.py
 Classification/.ipynb_checkpoints/cars_logit-checkpoint.py
 Classification/__pycache__/nonlineardata.cpython-311.pyc
+.vscode/
+
